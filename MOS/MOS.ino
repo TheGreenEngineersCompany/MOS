@@ -7,6 +7,7 @@
 #include <Adafruit_TFTLCD.h> // Hardware-specific library
 #include <TouchScreen.h>
 #include <SPI.h>
+#include <EEPROM.h>
 
 TouchScreen ts = TouchScreen(XP, YP, XM, YM, 308); //644
 Adafruit_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);
@@ -21,28 +22,34 @@ Adafruit_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);
 int tlx = 0;
 int tly = 0;
 
-double tc = 150;
-int tt = 230;
-int ms = 100;
-float dt = 1.75;
-float dc = 0.00;
+float dt = 1.75;// Diameter Target
+float dc = 0.00;// Diameter Current
 
-int otc = 0;
-int ott = 0;
-int oms = 0;
+double tc = 150;// Temperature Current
+int tt = 230;// Temperature Target
+int otc = 0;// Old Temperature Current
+int ott = 0;// Old Temperature Target
+
+int ms = 100;// Motor Speed
+int oms = 0;// Old Motor Speed
+
 float odt = 0;
 float odc = 0;
+
 int ofs = 0;
 
-boolean firstdraw = true;
+int aa = 0;// variable to calibrate the analog thermocouple
+int oaa = 0;
+
+boolean firstdraw = false;
 boolean firstdrawdata = false;
 int motoron = 0;
 int heateron = 1;
 int currentpage = 0;
 
 int variableheat = 1;
-unsigned long TimerA;
-unsigned long timerdelay =1000UL;
+unsigned long TimerA; // timer to add delays to controller functions
+unsigned long timerdelay =1000UL; // timer delay
 int natc = 0;
 int oatc = 0;
 
@@ -119,6 +126,13 @@ void setup(void)
   pinMode(SSR1_HEATER, OUTPUT);
   
   ms = 0;
+
+  tt = EEPROM.read(0); // reads your temperature target from eeprom from last start.
+  aa = EEPROM.read(2);
+  if(EEPROM.read(1) == 1)
+  {
+    aa = aa * -1;
+  }
 }
 
 void loop()
@@ -132,6 +146,7 @@ void loop()
  
 if(currentpage == 0)
   statuspagedraw();
+ 
  if(currentpage == 1)
   setuppagedraw();
   
@@ -158,7 +173,7 @@ if(millis() - TimerA >=  timerdelay)
   Serial.print(" ");
   Serial.print(tc);
   
-   tc = tc - 30;
+   tc = tc - aa;
      Serial.print(" ");
   Serial.println(tc);
  

@@ -107,6 +107,7 @@ void statuspagedraw()
         Serial.println("you touched me that tickles");
         tft.fillScreen(BLACK);
         firstdraw = false;
+        delay(500);
     }
      if(touchbox(190, 190 + BOXSIZE, 110, 110 + BOXSIZE))
     {
@@ -122,6 +123,7 @@ void statuspagedraw()
         }
         tft.fillScreen(BLACK);
         firstdraw = false;
+        delay(500);
     }
       if(touchbox(190, 190 + BOXSIZE, 160, 160 + BOXSIZE))
     {
@@ -136,6 +138,7 @@ void statuspagedraw()
         }
         tft.fillScreen(BLACK);
         firstdraw = false;
+        delay(500);
     }
 }
 
